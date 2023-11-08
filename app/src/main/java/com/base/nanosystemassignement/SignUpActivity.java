@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,8 +39,6 @@ import java.util.Locale;
 public class SignUpActivity extends AppCompatActivity {
 
     FusedLocationProviderClient fusedLocationProviderClient;
-    TextView lattitude,longitude,address,city,country;
-    Button getLocation;
     private final static int REQUEST_CODE = 100;
 
     private FirebaseAuth auth;
@@ -56,7 +55,6 @@ public class SignUpActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         signupButton = findViewById(R.id.signup_button);
         signupPassword = findViewById(R.id.signup_password);
-        loginRedirectText = findViewById(R.id.loginRedirectText);
         signupEmail = findViewById(R.id.signup_email);
 
         Username = findViewById(R.id.Username);
@@ -76,9 +74,9 @@ public class SignUpActivity extends AppCompatActivity {
                 String user = signupEmail.getText().toString().trim();
                 String pass = signupPassword.getText().toString().trim();
                 String name = Username.getText().toString().trim();
-                String PhoneNo = Username.getText().toString().trim();
-                String Address = Username.getText().toString().trim();
-                String Location = Username.getText().toString().trim();
+                String contact = PhoneNo.getText().toString().trim();
+                String address = Address.getText().toString().trim();
+                String location = Location.getText().toString().trim();
 
                 if (user.isEmpty()) {
                     signupEmail.setText("email can not be empty");
@@ -93,7 +91,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                                 FirebaseUser firebaseUser = auth.getCurrentUser();
 
-                                UserDetails userDetails = new UserDetails(name,PhoneNo,Address,Location);
+                                UserDetails userDetails = new UserDetails(name,contact,address,location);
 
                                 DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("User");
 
@@ -109,10 +107,6 @@ public class SignUpActivity extends AppCompatActivity {
 
                                     }
                                 });
-
-
-
-
                                 Toast.makeText(SignUpActivity.this, "sign up is successful", Toast.LENGTH_SHORT).show();
 
                                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
@@ -125,13 +119,15 @@ public class SignUpActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     Toast.makeText(SignUpActivity.this, "profile name updated", Toast.LENGTH_SHORT).show();
+
                                                 }
                                             }
                                         });
 
-                                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
                             } else {
                                 Toast.makeText(SignUpActivity.this, "Signup failed" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                Log.e("MyTag for finding error", "Error occurred: " + task.getException().getMessage());
                             }
 
                         }
@@ -141,14 +137,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        loginRedirectText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-
-
-            }
-        });
 
 
     }
